@@ -77,14 +77,15 @@ const server = (req, res) => {
         return;
       }
 
-      const stream = fs.createWriteStream(filePath);
-      let streamIncomingLength = 0;
+      const stream = fs.createWriteStream(filePath, {flags: 'wx'});
+      let l = 0;
       req.on('data', (buf) => {
-        streamIncomingLength += buf.length;
-        if (streamIncomingLength > 1048576) {
+        l += buf.length;
+        if (l > 1048576) {
           stream.destroy();
+          fs.unlink(filePath);
           res.statusCode = 413;
-          res.end('Accepting only file less than 1 MB');
+          res.end('Accept only file less than 1 MB');
         }
       });
       req.pipe(stream);
@@ -92,13 +93,13 @@ const server = (req, res) => {
         res.statusCode = 200;
         res.end('OK');
       });
-      stream.on('close', () => {
-        if (streamIncomingLength > 1048576) {
-          fs.unlink(filePath, (err) => {
-            if (err) throw err;
-          });
-        }
-      });
+      // stream.on('close', () => {
+      //   if (l > 1048576) {
+      //     fs.unlink(filePath, (err) => {
+      //       if (err) throw err;
+      //     });
+      //   }
+      // });
       stream.on('error', (err) => {
         res.statusCode = 500;
         res.end('Server Error');
