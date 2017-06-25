@@ -1,6 +1,6 @@
 const server = require('../server');
 const request = require('request');
-const fs = require('fs');
+const fs = require('mz/fs');
 const assert = require('assert');
 
 const serverUrl = 'http://localhost:8888/';
@@ -62,8 +62,6 @@ describe('server tests', () => {
 
     request.del({url: serverUrl+'file3'},
       (error, response, body) => {
-        // console.log(response.statusCode, response.body);
-
         if (error) return done(error);
 
         assert.equal(response.statusCode, 200);
@@ -98,7 +96,6 @@ describe('server tests', () => {
 
   it('emit error 400 if path contains /', (done) => {
     request(serverUrl+'..', (error, response, body) => {
-      // console.log(response.statusCode, response.body);
       if (error) return done(error);
 
       assert.equal(response.statusCode, 400);
