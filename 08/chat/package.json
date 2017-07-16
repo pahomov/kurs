@@ -1,0 +1,7 @@
+{
+  "name": "node-materials",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "NODE_PATH=. nodemon index.js -watch index.js"
+  }
+}

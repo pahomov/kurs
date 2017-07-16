@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Chat</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css">
+</head>
+
+<body>
+  <div class="section">
+    <div class="container">
+
+      <div class="columns">
+        <div class="column">
+          <p class="title">Chat</p>
+        </div>
+        <div class="column is-narrow">
+          <div class="field">
+            <p class="control">
+              <a class="button is-link" href="/logout">Logout</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="card card-content" id="log">
+
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+
+          <form class="field is-grouped">
+            <p class="control is-expanded">
+              <input class="input" type="text" id="message" autocomplete="off">
+            </p>
+            <p class="control">
+              <input type="submit" class="button is-primary" value="Submit" />
+            </p>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    $(function () {
+
+      const getCookie = n => {
+        let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`);
+        return a ? a[1] : '';
+      }
+
+      var socket = io();
+
+      // отправка сообщения
+      $('form').submit(event => {
+        socket.emit('message', {
+          jwt: getCookie('access_token'),
+          message: $('#message').val(),
+        });
+        $('#message').val('');
+        event.preventDefault();
+      });
+
+      const add = data => {
+        $('#log').append($('<p>').html(`<strong>${data.user}</strong>: ${data.message}`));
+      };
+
+      // получение новых сообщений
+      socket.on('message', add);
+
+      // при входе получить историю сообщений
+      $.getJSON('/log', res => res.map(add));
+    });
+  </script>
+
+</body>
+
+</html>
