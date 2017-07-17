@@ -1,4 +1,5 @@
-// задача jwt авторизация на passport
+// задача доработать чат (поработать с websockets)
+
 const Koa = require('koa');
 const Router = require('koa-router');
 const logger = require('koa-logger');
